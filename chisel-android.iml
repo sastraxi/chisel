@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager" forced_jdk="true">
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel/libs/gdx.jar!/" />
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel-android/libs/gdx-backend-android.jar!/" />
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel/libs/tween-engine-api.jar!/" />
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel/libs/bodyeditor-loader.jar!/" />
+    <src_description expected_position="1">
+      <src_folder value="file://$USER_HOME$/libgdx/generated/chisel-android/src" expected_position="0" />
+      <src_folder value="file://$USER_HOME$/libgdx/generated/chisel-android/gen" expected_position="1" />
+      <src_folder value="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK" expected_position="4" />
+      <src_folder value="com.android.ide.eclipse.adt.LIBRARIES" expected_position="5" />
+    </src_description>
+  </component>
+  <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/../../libgdx/generated/chisel-android/gen" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/../../libgdx/generated/chisel-android/gen" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../../libgdx/generated/chisel-android/AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/../../libgdx/generated/chisel-android/res" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../../libgdx/generated/chisel-android/assets" />
+        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../../libgdx/generated/chisel-android/libs" />
+        <resOverlayFolders>
+          <path>/../../libgdx/generated/chisel-android/res-overlay</path>
+        </resOverlayFolders>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$USER_HOME$/libgdx/generated/chisel-android/bin/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/chisel-android">
+      <sourceFolder url="file://$MODULE_DIR$/chisel-android/gen" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/chisel-android/src" />
+    </content>
+    <content url="file://$MODULE_DIR$/chisel-android/gen">
+      <sourceFolder url="file://$MODULE_DIR$/chisel-android/gen" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/libgdx/generated/chisel-android/gen">
+      <sourceFolder url="file://$USER_HOME$/libgdx/generated/chisel-android/gen" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="chisel" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library name="gdx.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/gdx.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/gdx-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="gdx-backend-android.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel-android/libs/gdx-backend-android.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel-android/libs/gdx-backend-android-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="tween-engine-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/tween-engine-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/tween-engine-api-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="bodyeditor-loader.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/bodyeditor-loader.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/bodyeditor-loader-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
+

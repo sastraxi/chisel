@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager">
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel/libs/gdx.jar!/" />
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel/libs/tween-engine-api.jar!/" />
+    <libelement value="jar://$USER_HOME$/libgdx/generated/chisel/libs/bodyeditor-loader.jar!/" />
+    <src_description expected_position="0">
+      <src_folder value="file://$USER_HOME$/libgdx/generated/chisel/src" expected_position="0" />
+    </src_description>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$USER_HOME$/libgdx/generated/chisel/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/chisel">
+      <sourceFolder url="file://$MODULE_DIR$/chisel/src" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="module-library" exported="">
+      <library name="gdx.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/gdx.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/gdx-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="tween-engine-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/tween-engine-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/tween-engine-api-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="bodyeditor-loader.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/bodyeditor-loader.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/chisel/libs/bodyeditor-loader-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
+
