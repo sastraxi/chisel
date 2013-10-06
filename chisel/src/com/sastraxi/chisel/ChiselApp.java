@@ -69,7 +69,7 @@ public class ChiselApp implements ApplicationListener {
 		planes.add(new Plane(Vector3.X.scl(-1f), new Vector3(-SCALE, 0f, 0f)));
 		planes.add(new Plane(Vector3.Z,          new Vector3(0f, 0f,  SCALE)));
 		planes.add(new Plane(Vector3.Z.scl(-1f), new Vector3(0f, 0f, -SCALE)));
-		//Brush boxBrush = HalfspacePolygon.toConvex(planes);
+		Brush boxBrush = HalfspacePolygon.toConvex(planes);
 
 		shaderProvider = new DefaultShaderProvider();
 		batch = new ModelBatch(shaderProvider);

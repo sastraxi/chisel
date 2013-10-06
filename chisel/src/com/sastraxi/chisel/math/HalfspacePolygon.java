@@ -51,11 +51,12 @@ public class HalfspacePolygon {
 		Array<Array<Integer>> vertexList = new Array<Array<Integer>>();
 		Array<Array<int[]>> edgeList = new Array<Array<int[]>>();
 
-		// cache a point on each plane
-		Vector3[] pointOn = new Vector3[planes.size];
+		// create arrays
 		for (int x = 0; x < planes.size; ++x) {
-			Intersector.intersectLinePlane(0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, planes.get(x), pointOn[x]);
+			edgeList.add(new Array<int[]>());
+			for (int y = 0; y < planes.size; ++y) {
+				vertexList.add(new Array<Integer>());
+			}
 		}
 
 		// gather [plane_index, plane_index] -> ArrayList<Integer>
@@ -68,27 +69,39 @@ public class HalfspacePolygon {
 				for (int c = 0; c < b; ++c) {
 					Plane plane_c = planes.get(c);
 
-					float determinant = createSideBySide(plane_a.normal, plane_b.normal, plane_c.normal).det();
-					if (determinant < LocalMath.EPSILON) {
+					// here I used the following:
+					// http://geomalgorithms.com/a05-_intersect-1.html#Intersection-of-3%20Planes
+
+					Vector3 cp_a = plane_b.normal.cpy().crs(plane_c.normal);
+
+					float determinant = plane_a.normal.dot(cp_a);
+					if (Math.abs(determinant) < LocalMath.EPSILON) {
 						// the planes do not intersect.
+						// System.out.println("No intersection: " + plane_a + " |\t" + plane_b + " |\t" + plane_c);
+						// System.out.println("cp_a -> " + cp_a);
+						// System.out.println("plane_a.normal -> " + plane_a.normal);
 						continue;
 					}
 
+					Vector3 cp_b = plane_c.normal.cpy().crs(plane_a.normal);
+					Vector3 cp_c = plane_a.normal.cpy().crs(plane_b.normal);
+
 					// the point where all planes intersect
-					Vector3 intersection =
-							(plane_b.normal.crs(plane_c.normal).scl(pointOn[a].dot(plane_a.normal)))
-						.add(plane_c.normal.crs(plane_a.normal).scl(pointOn[b].dot(plane_b.normal)))
-					    .add(plane_a.normal.crs(plane_b.normal).scl(pointOn[c].dot(plane_c.normal)))
-					    .scl(1f / determinant);
+					Vector3 intersection = new Vector3(0f, 0f, 0f)
+							.add(cp_a.scl(-plane_a.getD()))
+							.add(cp_b.scl(-plane_b.getD()))
+							.add(cp_c.scl(-plane_c.getD()))
+							.scl(1f / determinant);
 
 					// add this vertex to the master list
 					int v_i = vertices.size;
 					vertices.add(intersection);
+					System.out.println(intersection);
 
 					// add to per-edge vertex lists
-					vertexList.get(a * planes.size + b).add(v_i);
-					vertexList.get(a * planes.size + c).add(v_i);
-					vertexList.get(b * planes.size + c).add(v_i);
+					vertexListPush(vertexList, a * planes.size + b, v_i);
+					vertexListPush(vertexList, a * planes.size + c, v_i);
+					vertexListPush(vertexList, b * planes.size + c, v_i);
 				}
 			}
 		}
@@ -127,6 +140,10 @@ public class HalfspacePolygon {
 				}
 
 				if (lineVertices.size == 0) continue; // the two planes don't meet (are parallel)
+				if (lineVertices.size == 1) {
+					System.out.println(lineVertices.get(0));
+					continue;
+				}
 				assert(lineVertices.size == 2);
 
 				int[] edge = new int[] {lineVertices.get(LocalMath.EDGE_START),
@@ -155,6 +172,12 @@ public class HalfspacePolygon {
 			while (sortedEdges.size < edges.size) {
 				if (edges.get(i)[LocalMath.EDGE_START] == sortedEdges.peek()[LocalMath.EDGE_END]) {
 					sortedEdges.add(edges.get(i));
+				} else if (edges.get(i)[LocalMath.EDGE_END] == sortedEdges.peek()[LocalMath.EDGE_END]) {
+					// in opposite order; flip it
+					sortedEdges.add(new int[] {
+						edges.get(i)[LocalMath.EDGE_END],
+						edges.get(i)[LocalMath.EDGE_START]
+					});
 				}
 				i = (i + 1) % edges.size;
 			}
@@ -167,6 +190,15 @@ public class HalfspacePolygon {
 		}
 
 		return new Brush(vertices, faces);
+	}
+
+	private static void vertexListPush(Array<Array<Integer>> vertexList, int i, int v_i) {
+		Array<Integer> l = vertexList.get(i);
+		if (l == null) {
+			l = new Array<Integer>();
+			vertexList.set(i, l);
+		}
+		l.add(v_i);
 	}
 
 	public static ArrayList<Plane> fromConvex(Brush brush) {
