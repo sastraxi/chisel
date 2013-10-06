@@ -71,15 +71,14 @@ public class HalfspacePolygon {
 
 					// here I used the following:
 					// http://geomalgorithms.com/a05-_intersect-1.html#Intersection-of-3%20Planes
+					// todo factor plane-plane-plane intersection into helper class
 
 					Vector3 cp_a = plane_b.normal.cpy().crs(plane_c.normal);
 
 					float determinant = plane_a.normal.dot(cp_a);
 					if (Math.abs(determinant) < LocalMath.EPSILON) {
 						// the planes do not intersect.
-						// System.out.println("No intersection: " + plane_a + " |\t" + plane_b + " |\t" + plane_c);
-						// System.out.println("cp_a -> " + cp_a);
-						// System.out.println("plane_a.normal -> " + plane_a.normal);
+						System.out.println("(" + a + ", " + b + ", " + c + "): --");
 						continue;
 					}
 
@@ -94,14 +93,28 @@ public class HalfspacePolygon {
 							.scl(1f / determinant);
 
 					// add this vertex to the master list
-					int v_i = vertices.size;
-					vertices.add(intersection);
-					System.out.println(intersection);
+					// but don't add it if it's a duplicate of an existing vertex
+					boolean found = false;
+					int v_i;
+					for (v_i = 0; v_i < vertices.size; ++v_i) {
+						float dst = vertices.get(v_i).dst2(intersection);
+						System.out.println(a + ", " + b +"," + c + ":" +dst);
+						if (dst < LocalMath.EPSILON) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						assert(v_i == vertices.size);
+						System.out.println("planes [" + a + ", " + b + ", " + c + "]; new vertex (" + intersection + ")");
+						vertices.add(intersection);
+					}
 
 					// add to per-edge vertex lists
 					vertexListPush(vertexList, a * planes.size + b, v_i);
 					vertexListPush(vertexList, a * planes.size + c, v_i);
 					vertexListPush(vertexList, b * planes.size + c, v_i);
+
 				}
 			}
 		}
@@ -116,6 +129,7 @@ public class HalfspacePolygon {
 				if (plane_a.distance(vertex) > LocalMath.EPSILON) {
 					// vertex on plane side; that is, an outward face on the polyhedron can see this point.
 					// however, this would make the polyhedron concave, so discard the point.
+					System.out.println("Plane " + a + " [" + plane_a + "] rejected the vertex: " + vertex);
 					vertices.set(i, null);
 				}
 			}
@@ -135,19 +149,55 @@ public class HalfspacePolygon {
 				for (Iterator<Integer> x = lineVertices.iterator(); x.hasNext();) {
 					int v_i = x.next();
 					if (vertices.get(v_i) == null) {
-						x.remove();;
+						x.remove();
 					}
 				}
 
 				if (lineVertices.size == 0) continue; // the two planes don't meet (are parallel)
 				if (lineVertices.size == 1) {
-					System.out.println(lineVertices.get(0));
+					System.out.println(a + "," + b + ": one vertex (no edge); 3+ faces join here.");
 					continue;
 				}
 				assert(lineVertices.size == 2);
 
 				int[] edge = new int[] {lineVertices.get(LocalMath.EDGE_START),
 						                lineVertices.get(LocalMath.EDGE_END)};
+
+				// todo factor plane-plane intersection into helper class
+				// Once again, http://geomalgorithms.com/a05-_intersect-1.html
+				Vector3 u = plane_a.normal.cpy().crs(plane_b.normal);
+				if (u.len() > LocalMath.EPSILON) {
+
+					// find a point on both of them
+					u.nor();
+					Vector3 pt = new Vector3();
+					// todo pick largest absolute coord in u
+					if (Math.abs(u.x) > LocalMath.EPSILON) {
+						pt.x = 0f;
+						float den = (plane_a.normal.y * plane_b.normal.z - plane_b.normal.y * plane_a.normal.z);
+						pt.y = (plane_a.normal.z * plane_b.d - plane_b.normal.z * plane_a.d) / den;
+						pt.z = (plane_b.normal.y * plane_a.d - plane_a.normal.y * plane_b.d) / den;
+
+					} else if (Math.abs(u.y) > LocalMath.EPSILON) {
+						pt.y = 0f;
+						float den = (plane_a.normal.z * plane_b.normal.x - plane_b.normal.z * plane_a.normal.x);
+						pt.z = (plane_a.normal.x * plane_b.d - plane_b.normal.x * plane_a.d) / den;
+						pt.x = (plane_b.normal.z * plane_a.d - plane_a.normal.z * plane_b.d) / den;
+
+					} else {
+						assert(Math.abs(u.z) > LocalMath.EPSILON);
+						pt.z = 0f;
+						float den = (plane_a.normal.x * plane_b.normal.y - plane_b.normal.x * plane_a.normal.y);
+						pt.x = (plane_a.normal.y * plane_b.d - plane_b.normal.y * plane_a.d) / den;
+						pt.y = (plane_b.normal.x * plane_a.d - plane_a.normal.x * plane_b.d) / den;
+					}
+					System.out.println("Planes (" + a + "," + b + ") intersect at: (" + pt + ") + t(" + u + ")");
+
+				} else {
+					System.out.println("Planes (" + a + "," + b + ") do not intersect!");
+				}
+				System.out.println(" - discovered edge: (" + vertices.get(edge[LocalMath.EDGE_START]) + ")-("
+						                                   + vertices.get(edge[LocalMath.EDGE_END]) + ")");
 
 				// add to per-plane edge lists
 				edgeList.get(a).add(edge);
@@ -163,6 +213,11 @@ public class HalfspacePolygon {
 			// make sure we have a closed set of edges
 			Array<int[]> edges = edgeList.get(a);
 			assert(new Face(edges).isClosed());
+			System.out.println("Plane " + a);
+			for (int[] edge: edges) {
+				System.out.print(" ~ (" + vertices.get(edge[LocalMath.EDGE_START]) + ")");
+				System.out.println("-(" + vertices.get(edge[LocalMath.EDGE_END]) + ")");
+			}
 
 			// sort edges; pick whatever is first to start with and add adjoining until we get back to the start.
 			// claim: because we have asserted the edge loop is closed, this loop will eventually finish
@@ -182,6 +237,13 @@ public class HalfspacePolygon {
 				i = (i + 1) % edges.size;
 			}
 
+			System.out.println("to...");
+			for (int[] edge: sortedEdges) {
+				System.out.print(" ~ (" + vertices.get(edge[LocalMath.EDGE_START]) + ")");
+				System.out.println("-(" + vertices.get(edge[LocalMath.EDGE_END]) + ")");
+			}
+			System.out.println("");
+
 			// create the face
 			Face candidate = new Face(sortedEdges);
 			assert(candidate.isClosed());
@@ -192,13 +254,23 @@ public class HalfspacePolygon {
 		return new Brush(vertices, faces);
 	}
 
-	private static void vertexListPush(Array<Array<Integer>> vertexList, int i, int v_i) {
-		Array<Integer> l = vertexList.get(i);
+	/**
+	 * Add a vertex index to the plane-plane intersection's list
+	 * @param vertexList
+	 * @return true if the candidate was added to the plane-plane intersection list, false if it was already there.
+	 */
+	private static boolean vertexListPush(Array<Array<Integer>> vertexList, int coord_plane_plane, int v_i) {
+		Array<Integer> l = vertexList.get(coord_plane_plane);
 		if (l == null) {
 			l = new Array<Integer>();
-			vertexList.set(i, l);
+			vertexList.set(coord_plane_plane, l);
 		}
-		l.add(v_i);
+		if (!l.contains(v_i, false)) {
+			l.add(v_i);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public static ArrayList<Plane> fromConvex(Brush brush) {

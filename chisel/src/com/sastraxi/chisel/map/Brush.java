@@ -16,6 +16,8 @@ import com.sastraxi.chisel.image.ColourManager;
 import com.sastraxi.chisel.math.Face;
 import com.sastraxi.chisel.math.LocalMath;
 
+import java.util.Arrays;
+
 public class Brush implements RenderableProvider {
 
 	public static float RESOLUTION = 0.00001f;
@@ -123,7 +125,7 @@ public class Brush implements RenderableProvider {
 	 * @return
 	 */
 	public Brush[] split(Plane plane) {
-		// xxx for each face, the plane either:
+		// todo for each face, the plane either:
 		// a) misses the face;
 		// b) glances the face (some edge of the face is on the plane)
 		// c) splits the face.
@@ -158,8 +160,8 @@ public class Brush implements RenderableProvider {
 		if (other.vertices.size != vertices.size) return false;
 		if (other.faces.size != faces.size) return false;
 
-		// first map vertices, _cnv[i] -> the index of i in other
-		int[] _cnv = new int[vertices.size];
+		// first map vertices, _map[i] -> the index of i in other
+		int[] _map = new int[vertices.size];
 		for (int i = 0; i < vertices.size; ++i) {
 			Vector3 v_this = this.vertices.get(i);
 
@@ -167,24 +169,26 @@ public class Brush implements RenderableProvider {
 				Vector3 v_other = other.vertices.get(j);
 
 				if (v_this.equals(v_other)) {
-					_cnv[i] = j;
+					_map[i] = j;
 				}
 			}
 		}
 
-		// create expected faces and look for them in the other object
+		// create expected faces (based on mapping),
+		// then look for them in the other object
 		for (int i = 0; i < faces.size; ++i) {
 
 			Array<int[]> expectedFaceEdges = new Array<int[]>();
 			for (int[] edge: faces.get(i).getEdges()) {
 				expectedFaceEdges.add(new int[] {
-					_cnv[edge[LocalMath.EDGE_START]],
-					_cnv[edge[LocalMath.EDGE_END]]
+					_map[edge[LocalMath.EDGE_START]],
+					_map[edge[LocalMath.EDGE_END]]
 				});
 			}
 
 			Face expectedFace = new Face(expectedFaceEdges);
 			if (!other.faces.contains(expectedFace, false)) {
+				System.out.println("Couldn't find " + expectedFace.toString2(vertices));
 				return false;
 			}
 
@@ -198,5 +202,17 @@ public class Brush implements RenderableProvider {
 		int result = faces.hashCode();
 		result = 31 * result + vertices.hashCode();
 		return result;
+	}
+
+	@Override
+	public String toString() {
+	    StringBuilder b = new StringBuilder();
+		b.append("Brush(" + faces.size + "):\n");
+		for (Face face: faces) {
+			b.append(" - ");
+			b.append(face.toString(vertices));
+			b.append("\n");
+		}
+		return b.toString();
 	}
 }

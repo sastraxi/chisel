@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.sastraxi.chisel.map.Brush;
 import com.sastraxi.chisel.math.Face;
 import com.sastraxi.chisel.math.HalfspacePolygon;
+import com.sastraxi.chisel.math.LocalMath;
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,12 +16,6 @@ public class TestHalfspace {
 
 	final float SCALE = 5f;
 
-	// Overall testing method:
-	// Create a Brush b.
-	// From that brush, pick 3 points on each face, make that into a plane. Add the plane.
-	// Brush b2 = HalfspacePolygon.toConvex(planes)
-	// assert(b.equals(b2));
-
 	@Test
 	public void testCube() {
 
@@ -28,12 +23,12 @@ public class TestHalfspace {
 		Array<Vector3> vertices = new Array<Vector3>();
 		vertices.add(new Vector3(-SCALE, -SCALE, -SCALE));  // left-bottom-front
 		vertices.add(new Vector3( SCALE, -SCALE, -SCALE));  // right-bottom-front
-		vertices.add(new Vector3(-SCALE,  SCALE, -SCALE));  // left-top-front
 		vertices.add(new Vector3( SCALE,  SCALE, -SCALE));  // right-top-front
+		vertices.add(new Vector3(-SCALE,  SCALE, -SCALE));  // left-top-front
 		vertices.add(new Vector3(-SCALE, -SCALE,  SCALE));  // left-bottom-back
 		vertices.add(new Vector3( SCALE, -SCALE,  SCALE));  // right-bottom-back
-		vertices.add(new Vector3(-SCALE,  SCALE,  SCALE));  // left-top-back
 		vertices.add(new Vector3( SCALE,  SCALE,  SCALE));  // right-top-back
+		vertices.add(new Vector3(-SCALE,  SCALE,  SCALE));  // left-top-back
 
 		Array<Face> faces = new Array<Face>();
 		faces.add(new Face(new int[]{ 0, 1, 2, 3 }));   // left
@@ -45,12 +40,12 @@ public class TestHalfspace {
 
 		// the same box, as made by our vertex thing
 		Array<Plane> planes = new Array<Plane>();
-		planes.add(new Plane(Vector3.Y,          new Vector3(0f,  SCALE, 0f)));
-		planes.add(new Plane(Vector3.Y.scl(-1f), new Vector3(0f, -SCALE, 0f)));
-		planes.add(new Plane(Vector3.X,          new Vector3( SCALE, 0f, 0f)));
-		planes.add(new Plane(Vector3.X.scl(-1f), new Vector3(-SCALE, 0f, 0f)));
-		planes.add(new Plane(Vector3.Z,          new Vector3(0f, 0f,  SCALE)));
-		planes.add(new Plane(Vector3.Z.scl(-1f), new Vector3(0f, 0f, -SCALE)));
+		planes.add(new Plane(new Vector3(0f,  1f, 0f), new Vector3(0f,  SCALE, 0f)));
+		planes.add(new Plane(new Vector3(0f, -1f, 0f), new Vector3(0f, -SCALE, 0f)));
+		planes.add(new Plane(new Vector3( 1f, 0f, 0f), new Vector3( SCALE, 0f, 0f)));
+		planes.add(new Plane(new Vector3(-1f, 0f, 0f), new Vector3(-SCALE, 0f, 0f)));
+		planes.add(new Plane(new Vector3(0f, 0f,  1f), new Vector3(0f, 0f,  SCALE)));
+		planes.add(new Plane(new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, -SCALE)));
 
 		Brush expected = new Brush(vertices, faces);
 		Brush brush = HalfspacePolygon.toConvex(planes);
@@ -61,6 +56,7 @@ public class TestHalfspace {
 	/**
 	 * Degenerate case; 4 planes emit top vertex.
 	 */
+	@Test
 	public void testPyramid() {
 
 		// a simple box.
@@ -80,11 +76,11 @@ public class TestHalfspace {
 
 		// the same box, as made by our vertex thing
 		Array<Plane> planes = new Array<Plane>();
-		planes.add(new Plane(vertices.get(0), vertices.get(1), vertices.get(2)));
-		planes.add(new Plane(vertices.get(0), vertices.get(2), vertices.get(3)));
-		planes.add(new Plane(vertices.get(0), vertices.get(3), vertices.get(4)));
-		planes.add(new Plane(vertices.get(0), vertices.get(4), vertices.get(1)));
-		planes.add(new Plane(vertices.get(1), vertices.get(2), vertices.get(3)));
+		planes.add(LocalMath.safePlane(new Vector3( 0f, 1f,  2f), new Vector3(0f, SCALE, 0f)));
+		planes.add(LocalMath.safePlane(new Vector3( 0f, 1f, -2f), new Vector3(0f, SCALE, 0f)));
+		planes.add(LocalMath.safePlane(new Vector3( 2f, 1f,  0f), new Vector3(0f, SCALE, 0f)));
+		planes.add(LocalMath.safePlane(new Vector3(-2f, 1f,  0f), new Vector3(0f, SCALE, 0f)));
+		planes.add(LocalMath.safePlane(new Vector3( 0f, -1f, 0f), new Vector3(0f,  -SCALE, 0f)));
 
 		Brush expected = new Brush(vertices, faces);
 		Brush brush = HalfspacePolygon.toConvex(planes);

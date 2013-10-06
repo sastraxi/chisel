@@ -28,6 +28,7 @@ public class ChiselApp implements ApplicationListener {
 
 	private Model box;
 	private ModelInstance boxInstance;
+	private Brush brush;
 
 	private ModelBatch batch;
 	private DefaultShaderProvider shaderProvider;
@@ -58,7 +59,17 @@ public class ChiselApp implements ApplicationListener {
 			  new Material(ColorAttribute.createDiffuse(Color.GREEN)),
 			  VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 		boxInstance = new ModelInstance(box);
-		//boxInstance.transform.setToTranslation(-10.0f, 0f, 0f);
+		boxInstance.transform.setToTranslation(-10.0f, 0f, 0f);
+
+		// the box, as made by us
+		Array<Plane> planes = new Array<Plane>();
+		planes.add(new Plane(Vector3.Y,          new Vector3(0f,  5f, 0f)));
+		planes.add(new Plane(Vector3.Y.scl(-1f), new Vector3(0f, -5f, 0f)));
+		planes.add(new Plane(Vector3.X,          new Vector3( 5f, 0f, 0f)));
+		planes.add(new Plane(Vector3.X.scl(-1f), new Vector3(-5f, 0f, 0f)));
+		planes.add(new Plane(Vector3.Z,          new Vector3(0f, 0f,  5f)));
+		planes.add(new Plane(Vector3.Z.scl(-1f), new Vector3(0f, 0f, -5f)));
+		brush = HalfspacePolygon.toConvex(planes);
 
 		shaderProvider = new DefaultShaderProvider();
 		batch = new ModelBatch(shaderProvider);
@@ -95,6 +106,7 @@ public class ChiselApp implements ApplicationListener {
 
 		batch.begin(camera);
 		batch.render(boxInstance, environment);
+		batch.render(brush, environment);
 		batch.end();
 
 		//stage.act(Gdx.graphics.getDeltaTime());

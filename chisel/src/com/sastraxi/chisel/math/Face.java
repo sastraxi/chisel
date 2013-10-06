@@ -119,4 +119,37 @@ public class Face {
 	public int hashCode() {
 		return edges.hashCode();
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append("Face(" + arity() + "): ");
+		for (int[] edge: edges) {
+			b.append("(");
+			b.append(edge[LocalMath.EDGE_START]);
+			b.append(")-");
+		}
+		return b.toString();
+	}
+
+	public String toString(Array<Vector3> vertices) {
+		StringBuilder b = new StringBuilder();
+		b.append("Face(" + arity() + "): ");
+		for (int[] edge: edges) {
+			b.append("(");
+			b.append(vertices.get(edge[LocalMath.EDGE_START]));
+			b.append(")-");
+		}
+		return b.toString();
+	}
+
+	public String toString2(Array<Vector3> vertices) {
+		StringBuilder b = new StringBuilder();
+		b.append("Face(" + arity() + "):\n");
+		for (int[] edge: edges) {
+			b.append(" ~ (" + vertices.get(edge[LocalMath.EDGE_START]) + ")");
+			b.append("-(" + vertices.get(edge[LocalMath.EDGE_END]) + ")\n");
+		}
+		return b.toString();
+	}
 }
