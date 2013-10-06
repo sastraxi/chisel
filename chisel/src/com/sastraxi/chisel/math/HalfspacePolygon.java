@@ -48,10 +48,10 @@ public class HalfspacePolygon {
 		// todo optimize out inner-loop object creation w/object pool
 
 		Array<Vector3> vertices = new Array<Vector3>();
-		Array<Array<Integer>> vertexList = new Array<Array<Integer>>();
-		Array<Array<int[]>> edgeList = new Array<Array<int[]>>();
 
 		// create arrays
+		Array<Array<Integer>> vertexList = new Array<Array<Integer>>();
+		Array<Array<int[]>> edgeList = new Array<Array<int[]>>();
 		for (int x = 0; x < planes.size; ++x) {
 			edgeList.add(new Array<int[]>());
 			for (int y = 0; y < planes.size; ++y) {

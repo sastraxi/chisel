@@ -31,7 +31,6 @@
     <output url="file://$USER_HOME$/libgdx/generated/chisel-android/bin/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/chisel-android">
-      <sourceFolder url="file://$MODULE_DIR$/chisel-android/gen" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/chisel-android/src" />
     </content>
     <content url="file://$MODULE_DIR$/chisel-android/gen">

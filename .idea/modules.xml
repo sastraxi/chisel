@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/chisel.iml" filepath="$PROJECT_DIR$/chisel.iml" />
       <module fileurl="file://$PROJECT_DIR$/chisel-android.iml" filepath="$PROJECT_DIR$/chisel-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/chisel-desktop.iml" filepath="$PROJECT_DIR$/chisel-desktop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chisel-test/chisel-test.iml" filepath="$PROJECT_DIR$/chisel-test/chisel-test.iml" />
     </modules>
   </component>
 </project>
