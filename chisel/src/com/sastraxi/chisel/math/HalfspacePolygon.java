@@ -45,7 +45,7 @@ public class HalfspacePolygon {
 		// 2 vertices that share 2 planes are an edge
 		// 1 face per plane
 
-		// todo optimize out inner-loop object creation w/object pool
+		// todo optimize out inner-loop object creation w/object pools
 
 		Array<Vector3> vertices = new Array<Vector3>();
 
@@ -98,7 +98,6 @@ public class HalfspacePolygon {
 					int v_i;
 					for (v_i = 0; v_i < vertices.size; ++v_i) {
 						float dst = vertices.get(v_i).dst2(intersection);
-						System.out.println(a + ", " + b +"," + c + ":" +dst);
 						if (dst < LocalMath.EPSILON) {
 							found = true;
 							break;
@@ -120,11 +119,13 @@ public class HalfspacePolygon {
 		}
 
 		// try to discard each vertex with each plane
-		for (int a = 0; a < planes.size; ++a) {
-			Plane plane_a = planes.get(a);
-			for (int i = 0; i < vertices.size; ++i) {
-				Vector3 vertex = vertices.get(i);
-				if (vertex == null) continue;
+		Integer[] _map = new Integer[vertices.size];
+		Array<Vector3> final_vertices = new Array<Vector3>();
+		for (int i = 0; i < vertices.size; ++i) {
+			Vector3 vertex = vertices.get(i);
+
+			for (int a = 0; a < planes.size; ++a) {
+				Plane plane_a = planes.get(a);
 
 				if (plane_a.distance(vertex) > LocalMath.EPSILON) {
 					// vertex on plane side; that is, an outward face on the polyhedron can see this point.
@@ -133,7 +134,18 @@ public class HalfspacePolygon {
 					vertices.set(i, null);
 				}
 			}
+
+			// will this be an output vertex?
+			if (vertices.get(i) != null) {
+				_map[i] = final_vertices.size;
+				final_vertices.add(vertex);
+			} else {
+				_map[i] = null;
+			}
 		}
+		vertices.clear();
+		vertices = final_vertices;
+		final_vertices = null;
 
 		// gather edges
 		for (int a = 0; a < planes.size; ++a) {
@@ -148,7 +160,7 @@ public class HalfspacePolygon {
 				// todo could do this a lot faster by adding to edge[] things that aren't null and asserting there are no more non-nulls in the list
 				for (Iterator<Integer> x = lineVertices.iterator(); x.hasNext();) {
 					int v_i = x.next();
-					if (vertices.get(v_i) == null) {
+					if (_map[v_i] == null) {
 						x.remove();
 					}
 				}
@@ -160,8 +172,8 @@ public class HalfspacePolygon {
 				}
 				assert(lineVertices.size == 2);
 
-				int[] edge = new int[] {lineVertices.get(LocalMath.EDGE_START),
-						                lineVertices.get(LocalMath.EDGE_END)};
+				int[] edge = new int[] {_map[lineVertices.get(LocalMath.EDGE_START)],
+						                _map[lineVertices.get(LocalMath.EDGE_END)]};
 
 				// todo factor plane-plane intersection into helper class
 				// Once again, http://geomalgorithms.com/a05-_intersect-1.html

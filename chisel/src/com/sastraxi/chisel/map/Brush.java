@@ -27,6 +27,9 @@ public class Brush implements RenderableProvider {
 	private final Array<Vector3> vertices;
 	private final Color colour;
 
+	/**
+	 * A brush is not allowed to contain vertices that do not exist on any faces.
+	 */
 	public Brush(Array<Vector3> vertices, Array<Face> faces) {
 		this.vertices = vertices;
 		this.faces = faces;
