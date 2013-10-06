@@ -167,8 +167,8 @@ public class HalfspacePolygon {
 			// sort edges; pick whatever is first to start with and add adjoining until we get back to the start.
 			// claim: because we have asserted the edge loop is closed, this loop will eventually finish
 			Array<int[]> sortedEdges = new Array<int[]>();
-			int i = 0;
 			sortedEdges.add(edges.get(0));
+			int i = 1;
 			while (sortedEdges.size < edges.size) {
 				if (edges.get(i)[LocalMath.EDGE_START] == sortedEdges.peek()[LocalMath.EDGE_END]) {
 					sortedEdges.add(edges.get(i));
