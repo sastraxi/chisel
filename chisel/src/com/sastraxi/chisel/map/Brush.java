@@ -1,9 +1,6 @@
 package com.sastraxi.chisel.map;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
@@ -55,46 +52,52 @@ public class Brush implements RenderableProvider {
 		return _mesh;
 	}
 
+	/**
+	 * Generates a non-smooth mesh (think: D&D dice) that represents this Brush,
+	 * given its geometry.
+	 */
 	private Mesh generateMesh() {
 
-		// each face has (edges - 2) * 3 triangles.
-		int n_triangles = 0;
+		// each face has (edges - 2) triangles.
+		int n_indices = 0, n_vertices = 0;
 		for (Face face: faces) {
-			n_triangles += (face.arity() - 2) * 3;
+			n_vertices += face.arity();
+			n_indices += (face.arity() - 2) * 3;
 		}
 
 		int i = 0, v = 0;
-		short[] indices = new short[n_triangles * 3]; // each triangle has 3 vertices.
-		float[] verts = new float[indices.length * 6]; // each vertex has a number of attributes; see below*
+		short[] indices = new short[n_indices]; // each triangle has 3 vertices.
+		float[] verts = new float[n_vertices * 6]; // each vertex has a number of attributes; see below*
 		for (Face face: faces) {
-			for (int t = 0; t < face.arity() - 2; ++t) {
 
-				// triangle fan-type generator
-				indices[i  ] = (short) face.getEdges().get(0  )[LocalMath.EDGE_START];
-				indices[i+1] = (short) face.getEdges().get(t+1)[LocalMath.EDGE_START];
-				indices[i+2] = (short) face.getEdges().get(t+2)[LocalMath.EDGE_START];
+			Vector3 normal = face.getNormal(this.vertices).nor();
 
-				Vector3 normal = face.getNormal(this.vertices);
-				Vector3 p1 = this.vertices.get(indices[i  ]);
-				Vector3 p2 = this.vertices.get(indices[i+1]);
-				Vector3 p3 = this.vertices.get(indices[i+2]);
-
-				verts[v++] = p1.x; verts[v++] = p1.y; verts[v++] = p1.z;
+			// assemble vertices
+			int v_start = v / 6;
+			for (int t = 0; t < face.arity(); ++t) {
+				Vector3 p = this.vertices.get(face.getEdges().get(t)[LocalMath.EDGE_START]);
+				verts[v++] = p.x; verts[v++] = p.y; verts[v++] = p.z;
 				verts[v++] = normal.x; verts[v++] = normal.y; verts[v++] = normal.z;
-				verts[v++] = p2.x; verts[v++] = p2.y; verts[v++] = p2.z;
-				verts[v++] = normal.x; verts[v++] = normal.y; verts[v++] = normal.z;
-				verts[v++] = p3.x; verts[v++] = p3.y; verts[v++] = p3.z;
-				verts[v++] = normal.x; verts[v++] = normal.y; verts[v++] = normal.z;
-
-				i += 3;
 			}
+
+			// assemble indices (triangle fan)
+			for (int t = 0; t < face.arity() - 2; ++t) {
+				indices[i++] = (short) (v_start);
+				indices[i++] = (short) (v_start+t+1);
+				indices[i++] = (short) (v_start+t+2);
+			}
+
 		}
 
 		// the total number of components in the VertexAttributes attached
 		// must match the multiplier in the verts[] definition above*
-		Mesh mesh = new Mesh(true, verts.length, indices.length,
+		Mesh mesh = new Mesh(true, n_vertices, n_indices,
 				new VertexAttribute(VertexAttributes.Usage.Position, 3, "a_position"),
 				new VertexAttribute(VertexAttributes.Usage.Normal, 3, "a_normal"));
+
+		System.out.println("Generated Mesh:");
+		System.out.println(Arrays.toString(verts));
+		System.out.println(Arrays.toString(indices));
 
 		mesh.setVertices(verts);
 		mesh.setIndices(indices);
@@ -108,7 +111,9 @@ public class Brush implements RenderableProvider {
 
 	public void populate(Renderable r) {
 		r.mesh = getMesh();
-		r.material = new Material(new Material(ColorAttribute.createDiffuse(colour)));
+		r.material = new Material(ColorAttribute.createDiffuse(colour));
+		r.primitiveType = GL10.GL_TRIANGLES;
+		r.meshPartSize = r.mesh.getNumIndices();
 	}
 
 	public void invalidateMesh() {

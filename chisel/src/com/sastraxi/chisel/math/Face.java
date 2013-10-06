@@ -22,6 +22,9 @@ public class Face {
 	private Array<int[]> edges;
 	private Integer largest = 32; // FIXME: fix this!! this caps the max # of vertices/face!
 
+	/**
+	 * Faces must be wound counter-clockwise.
+	 */
 	public Face(int[] faces) {
 		this.edges = new Array<int[]>();
 		for (int i = 0; i < faces.length; ++i) {
@@ -77,7 +80,12 @@ public class Face {
 		return true;
 	}
 
-	// XXX: assumes counter-clockwise polygon winding
+	/**
+	 * Assumes counter-clockwise polygon winding.
+	 *
+	 * @param vertices
+	 * @return a newly-allocated Vector3 normal (not normalized).
+	 */
 	public Vector3 getNormal(Array<Vector3> vertices) {
 	   	assert(arity() >= 3);
 
@@ -87,7 +95,7 @@ public class Face {
 
 		Vector3 l1 = p_b.cpy().sub(p_a);
 		Vector3 l2 = p_c.cpy().sub(p_a);
-		return l2.crs(l1);
+		return l1.crs(l2);
 	}
 
 	public int arity() {

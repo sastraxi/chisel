@@ -249,6 +249,20 @@ public class HalfspacePolygon {
 				i = (i + 1) % edges.size;
 			}
 
+			// correct polygon winding xxx do this implicitly somehow
+			Face candidate = new Face(sortedEdges);
+			if (candidate.getNormal(vertices).dot(planes.get(a).normal) < 0) {
+				// the normals are facing away from each other; flip the edge order.
+				assert(candidate.getEdges() == sortedEdges);
+				for (int k = 0; k < sortedEdges.size; ++k) {
+					sortedEdges.set(k, new int[] {
+						sortedEdges.get(k)[LocalMath.EDGE_END],
+						sortedEdges.get(k)[LocalMath.EDGE_START]
+					});
+				}
+				sortedEdges.reverse();
+			}
+
 			System.out.println("to...");
 			for (int[] edge: sortedEdges) {
 				System.out.print(" ~ (" + vertices.get(edge[LocalMath.EDGE_START]) + ")");
@@ -256,8 +270,7 @@ public class HalfspacePolygon {
 			}
 			System.out.println("");
 
-			// create the face
-			Face candidate = new Face(sortedEdges);
+			// create the face with the correct normal.
 			assert(candidate.isClosed());
 			assert(candidate.isOrdered()); // what we just did
 			faces.add(candidate);

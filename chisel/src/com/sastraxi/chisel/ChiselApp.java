@@ -39,6 +39,10 @@ public class ChiselApp implements ApplicationListener {
 	public void create() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 
+		Gdx.gl.glFrontFace(GL10.GL_CCW);
+		Gdx.gl.glEnable(GL10.GL_CULL_FACE);
+		Gdx.gl.glCullFace(GL10.GL_BACK);
+
 		camera = new PerspectiveCamera(FIELD_OF_VIEW, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.position.set(10f, 10f, 10f);
 		camera.lookAt(0f, 0f, 0f);
@@ -59,16 +63,16 @@ public class ChiselApp implements ApplicationListener {
 			  new Material(ColorAttribute.createDiffuse(Color.GREEN)),
 			  VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 		boxInstance = new ModelInstance(box);
-		boxInstance.transform.setToTranslation(-10.0f, 0f, 0f);
+		boxInstance.transform.setToTranslation(-10.0f, -10.0f, 0f);
 
 		// the box, as made by us
 		Array<Plane> planes = new Array<Plane>();
-		planes.add(new Plane(Vector3.Y,          new Vector3(0f,  5f, 0f)));
-		planes.add(new Plane(Vector3.Y.scl(-1f), new Vector3(0f, -5f, 0f)));
-		planes.add(new Plane(Vector3.X,          new Vector3( 5f, 0f, 0f)));
-		planes.add(new Plane(Vector3.X.scl(-1f), new Vector3(-5f, 0f, 0f)));
-		planes.add(new Plane(Vector3.Z,          new Vector3(0f, 0f,  5f)));
-		planes.add(new Plane(Vector3.Z.scl(-1f), new Vector3(0f, 0f, -5f)));
+		planes.add(new Plane(new Vector3(0f,  1f, 0f), new Vector3(0f,  1f, 0f)));
+		planes.add(new Plane(new Vector3(0f, -1f, 0f), new Vector3(0f, -1f, 0f)));
+		planes.add(new Plane(new Vector3( 1f, 0f, 0f), new Vector3( 1f, 0f, 0f)));
+		planes.add(new Plane(new Vector3(-1f, 0f, 0f), new Vector3(-1f, 0f, 0f)));
+		planes.add(new Plane(new Vector3(0f, 0f,  1f), new Vector3(0f, 0f,  1f)));
+		planes.add(new Plane(new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, -1f)));
 		brush = HalfspacePolygon.toConvex(planes);
 
 		shaderProvider = new DefaultShaderProvider();
@@ -105,7 +109,7 @@ public class ChiselApp implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		batch.begin(camera);
-		batch.render(boxInstance, environment);
+		//batch.render(boxInstance, environment);
 		batch.render(brush, environment);
 		batch.end();
 
