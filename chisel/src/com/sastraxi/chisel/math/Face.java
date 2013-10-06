@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Light-weight edges structure for a face.
@@ -40,18 +41,27 @@ public class Face {
 	}
 
 	/**
-	 * Does this face form a
-	 * Not optimised for speed; intended for debug-mode assertions.
+	 * Does this face form a loop?
 	 */
+	public boolean isOrdered() {
+		Integer last = null;
+		for (int[] edge: edges) {
+			if (last != null && last != edge[LocalMath.EDGE_START]) {
+				return false;
+			}
+			last = edge[LocalMath.EDGE_END];
+		}
+		return (edges.get(0)[LocalMath.EDGE_START] == edges.get(edges.size - 1)[LocalMath.EDGE_END]);
+	}
+
 	public boolean isConvex(Array<Vector3> vertices) {
 		// todo implement Face.isConvex
-	   	return false;
+		return true;
 	}
 
 	// XXX: assumes counter-clockwise polygon winding
 	public Vector3 getNormal(Array<Vector3> vertices) {
 	   	assert(arity() >= 3);
-		assert(isConvex(vertices));
 
 		Vector3 p_a = vertices.get(edges.get(0)[LocalMath.EDGE_START]);
 		Vector3 p_b = vertices.get(edges.get(1)[LocalMath.EDGE_START]);

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -113,4 +114,18 @@ public class Brush implements RenderableProvider {
 		populate(r);
 		renderables.add(r);
 	}
+
+	/**
+	 *
+	 * @param plane the splitting plane.
+	 * @return
+	 */
+	public Brush[] split(Plane plane) {
+		// xxx for each face, the plane either:
+		// a) misses the face;
+		// b) glances the face (some edge of the face is on the plane)
+		// c) splits the face.
+		return null;
+	}
+
 }

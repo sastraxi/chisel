@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/chisel.iml" filepath="$PROJECT_DIR$/chisel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chisel-android.iml" filepath="$PROJECT_DIR$/chisel-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chisel-desktop.iml" filepath="$PROJECT_DIR$/chisel-desktop.iml" />
+    </modules>
+  </component>
+</project>
+

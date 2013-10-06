@@ -29,10 +29,14 @@ public class HalfspacePolygon {
 
 	/**
 	 * Take a list of planes that denote half-spaces and turn it into a list of vertices and faces.
+	 * This solves the Vertex enumeration problem and then goes one step further, turning the vertices
+	 * into faces based on the original planes (each plane becomes a face)
 	 *
+	 * This algorithm does not work with degenerate vertices (i.e. where a vertex lays on 4+ input planes).
+	 * I do not believe that Hammer creates such representations, and we wont\'t either.
 	 *
-	 * @param planes
-	 * @return
+	 * @param planes the list of planes.
+	 * @return a Brush that can be used to render the convex polytope.
 	 */
 	public static Brush toConvex(Array<Plane> planes) {
 
@@ -41,7 +45,7 @@ public class HalfspacePolygon {
 		// 2 vertices that share 2 planes are an edge
 		// 1 face per plane
 
-		// todo optimize out inner-loop object creation
+		// todo optimize out inner-loop object creation w/object pool
 
 		Array<Vector3> vertices = new Array<Vector3>();
 		Array<Array<Integer>> vertexList = new Array<Array<Integer>>();
@@ -139,13 +143,26 @@ public class HalfspacePolygon {
 		Array<Face> faces = new Array<Face>();
 		for (int a = 0; a < planes.size; ++a) {
 
-			// todo sort edges; pick whatever is first to start with and add adjoining until we get back to the start.
-			Array<int[]> sortedEdges = new Array<int[]>();
-			// populate sortedEdges from edgeList.get(a)
+			// make sure we have a closed set of edges
+			Array<int[]> edges = edgeList.get(a);
+			assert(new Face(edges).isClosed());
 
+			// sort edges; pick whatever is first to start with and add adjoining until we get back to the start.
+			// claim: because we have asserted the edge loop is closed, this loop will eventually finish
+			Array<int[]> sortedEdges = new Array<int[]>();
+			int i = 0;
+			sortedEdges.add(edges.get(0));
+			while (sortedEdges.size < edges.size) {
+				if (edges.get(i)[LocalMath.EDGE_START] == sortedEdges.peek()[LocalMath.EDGE_END]) {
+					sortedEdges.add(edges.get(i));
+				}
+				i = (i + 1) % edges.size;
+			}
+
+			// create the face
 			Face candidate = new Face(sortedEdges);
 			assert(candidate.isClosed());
-			assert(candidate.isConvex(vertices));
+			assert(candidate.isOrdered()); // what we just did
 			faces.add(candidate);
 		}
 
@@ -153,6 +170,8 @@ public class HalfspacePolygon {
 	}
 
 	public static ArrayList<Plane> fromConvex(Brush brush) {
+		// todo take each face and turn it into a cutting plane
+		// if any faces aren't convex throw a NonConvexFaceException
 		return null;
 	}
 

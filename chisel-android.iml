@@ -42,7 +42,7 @@
     </content>
     <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="chisel" exported="" />
+    <orderEntry type="module" module-name="$PARENT-1-PROJECT_LOC$" exported="" />
     <orderEntry type="module-library" exported="">
       <library name="gdx.jar">
         <CLASSES>

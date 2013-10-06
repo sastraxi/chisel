@@ -1,1 +1,7 @@
-This file was created by IntelliJ IDEA 12.1.5 for binding GitHub repository
+Chisel is a world editor for the Valve Map Format (VMF).
+
+Building can currently be only done with IntelliJ IDEA. There are plans to
+migrate to Gradle. JAR files are included with every tagged release (if you're
+reading this on Github, the link is near the top of the page).
+
+	java -jar dist/chisel-0.0.2.jar
