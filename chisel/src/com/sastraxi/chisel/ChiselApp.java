@@ -60,17 +60,6 @@ public class ChiselApp implements ApplicationListener {
 		boxInstance = new ModelInstance(box);
 		//boxInstance.transform.setToTranslation(-10.0f, 0f, 0f);
 
-		// the same box, as made by our vertex thing
-		final float SCALE = 5f;
-		Array<Plane> planes = new Array<Plane>();
-		planes.add(new Plane(Vector3.Y,          new Vector3(0f,  SCALE, 0f)));
-		planes.add(new Plane(Vector3.Y.scl(-1f), new Vector3(0f, -SCALE, 0f)));
-		planes.add(new Plane(Vector3.X,          new Vector3( SCALE, 0f, 0f)));
-		planes.add(new Plane(Vector3.X.scl(-1f), new Vector3(-SCALE, 0f, 0f)));
-		planes.add(new Plane(Vector3.Z,          new Vector3(0f, 0f,  SCALE)));
-		planes.add(new Plane(Vector3.Z.scl(-1f), new Vector3(0f, 0f, -SCALE)));
-		Brush boxBrush = HalfspacePolygon.toConvex(planes);
-
 		shaderProvider = new DefaultShaderProvider();
 		batch = new ModelBatch(shaderProvider);
 

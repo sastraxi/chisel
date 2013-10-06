@@ -15,24 +15,42 @@ import java.util.Iterator;
 public class Face {
 	private static final int INITIAL_CAPACITY = 3;
 
-	Face(Array<int[]> edges) {
+	public Face(Array<int[]> edges) {
 		this.edges = edges;
 	}
 
 	private Array<int[]> edges;
-	private Integer largest = 0;
+	private Integer largest = 32; // FIXME: fix this!! this caps the max # of vertices/face!
 
-	public boolean isClosed() {
-		// count how many times each vertex is linked to.
+	public Face(int[] faces) {
+		this.edges = new Array<int[]>();
+		for (int i = 0; i < faces.length; ++i) {
+			edges.add(new int[] {
+				faces[i],
+				faces[(i+1)%faces.length]
+			});
+		}
+	}
+
+	/**
+	 * Counts how many time each vertex is linked to.
+	 * @return an array of counts, addressed by vertex index.
+	 */
+	private int[] generateCounts() {
 		int[] counts = new int[largest+1];
 		Arrays.fill(counts, 0);
 		for (int[] edge: edges) {
 			counts[edge[LocalMath.EDGE_START]]++;
 			counts[edge[LocalMath.EDGE_END]]++;
 		}
+		return counts;
+	}
+
+	public boolean isClosed() {
 		// the only valid face has a ring of edges around it.
 		// in such a ring, each vertex is visited exactly twice.
 		int num_twos = 0;
+		int counts[] = generateCounts();
 		for (int count: counts) {
 			if (count == 2) num_twos++;
 		}
@@ -78,5 +96,27 @@ public class Face {
 
 	public Array<int[]> getEdges() {
 		return edges;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Face face = (Face) o;
+
+		// the two must mention the same vertices the same number of times.
+		// as convexity is a requirement, we won't equal anything wacky.
+		// XXX: do we check for winding here?
+		if (!Arrays.equals(generateCounts(), face.generateCounts())) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return edges.hashCode();
 	}
 }
