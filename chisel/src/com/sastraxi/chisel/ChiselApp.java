@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -34,8 +35,6 @@ public class ChiselApp implements ApplicationListener {
 	private DefaultShaderProvider shaderProvider;
 
 	private Stage stage;
-
-
 
 	@Override
 	public void create() {
@@ -65,7 +64,7 @@ public class ChiselApp implements ApplicationListener {
 			  new Material(ColorAttribute.createDiffuse(Color.GREEN)),
 			  VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 		boxInstance = new ModelInstance(box);
-		boxInstance.transform.setToTranslation(-10.0f, -10.0f, 0f);
+		boxInstance.transform.setToTranslation(-20.0f, 0f, -20f);
 
 		// the box, as made by us
 		Array<Plane> planes = new Array<Plane>();
@@ -76,6 +75,10 @@ public class ChiselApp implements ApplicationListener {
 		planes.add(new Plane(new Vector3(0f, 0f,  1f), new Vector3(0f, 0f,  1f)));
 		planes.add(new Plane(new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, -1f)));
 		brush = HalfspacePolygon.toConvex(planes);
+
+		Quaternion q = new Quaternion();
+		q.setEulerAngles(45f, 45f, 0f);
+		System.out.println(q.transform(new Vector3(1f, 0f, 0f)));
 
 		shaderProvider = new DefaultShaderProvider();
 		batch = new ModelBatch(shaderProvider);
@@ -111,7 +114,7 @@ public class ChiselApp implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		batch.begin(camera);
-		//batch.render(boxInstance, environment);
+		batch.render(boxInstance, environment);
 		batch.render(brush, environment);
 		batch.end();
 

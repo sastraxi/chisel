@@ -114,6 +114,7 @@ public class Brush implements RenderableProvider {
 		r.material = new Material(ColorAttribute.createDiffuse(colour));
 		r.primitiveType = GL10.GL_TRIANGLES;
 		r.meshPartSize = r.mesh.getNumIndices();
+		r.worldTransform.idt();
 	}
 
 	public void invalidateMesh() {
