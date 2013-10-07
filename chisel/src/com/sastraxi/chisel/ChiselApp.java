@@ -35,6 +35,8 @@ public class ChiselApp implements ApplicationListener {
 
 	private Stage stage;
 
+
+
 	@Override
 	public void create() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -78,13 +80,13 @@ public class ChiselApp implements ApplicationListener {
 		shaderProvider = new DefaultShaderProvider();
 		batch = new ModelBatch(shaderProvider);
 
-		createUI();
+		//createUI();
 	}
 
 	private void createUI() {
 
 		stage = new Stage();
-		Gdx.input.setInputProcessor(stage);
+		Gdx.input.setInputProcessor(stage); // TODO multiplex input
 
 		Table table = new Table();
 		table.setFillParent(true);
@@ -121,7 +123,7 @@ public class ChiselApp implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
-		stage.setViewport(width, height, true);
+		//stage.setViewport(width, height, true);
 		camera.viewportWidth = (float) width;
 		camera.viewportHeight = (float) height;
 		camera.update();

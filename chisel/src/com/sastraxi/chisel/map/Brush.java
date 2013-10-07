@@ -128,11 +128,15 @@ public class Brush implements RenderableProvider {
 	}
 
 	/**
+	 * Does not modify the Brush it is called on.
 	 *
 	 * @param plane the splitting plane.
-	 * @return
+	 * @param returnPositive return the new convex brush on the positive side of the plane (with normal).
+	 * @param returnNegative return the new convex brush on the negative side of the plane.
+	 *
+	 * @return a brush array. Get the brushes by e.g. carve(plane, true, false)[Brush.POSITIVE_SIDE]
 	 */
-	public Brush[] split(Plane plane) {
+	public Brush[] carve(Plane plane, boolean returnPositive, boolean returnNegative) {
 		// todo for each face, the plane either:
 		// a) misses the face;
 		// b) glances the face (some edge of the face is on the plane)

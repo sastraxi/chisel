@@ -1,5 +1,8 @@
 package com.sastraxi.chisel.map;
 
+import com.sastraxi.chisel.map.entities.Entity;
+import com.sastraxi.chisel.map.entities.PointEntity;
+
 import java.util.ArrayList;
 
 public class Root {
@@ -9,9 +12,7 @@ public class Root {
 	// for now, follow hammer/VMF to a "T".
 	// make decisions to change when they provide a very tangible benefit.
 
-	private ArrayList<Entity> world;
-
-
-
+	private BrushContainer world;
+	// private GameConfiguration config;
 
 }
