@@ -30,14 +30,17 @@
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$USER_HOME$/libgdx/generated/chisel-android/bin/classes" />
     <exclude-output />
+    <content url="file://$USER_HOME$/libgdx/generated/chisel-android/gen">
+      <sourceFolder url="file://$USER_HOME$/libgdx/generated/chisel-android/gen" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/chisel-android">
       <excludeFolder url="file://$MODULE_DIR$/chisel-android/src" />
     </content>
     <content url="file://$MODULE_DIR$/chisel-android/gen">
       <sourceFolder url="file://$MODULE_DIR$/chisel-android/gen" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/libgdx/generated/chisel-android/gen">
-      <sourceFolder url="file://$USER_HOME$/libgdx/generated/chisel-android/gen" isTestSource="false" />
+    <content url="file://C:/libgdx/generated/chisel-android/gen">
+      <sourceFolder url="file://C:/libgdx/generated/chisel-android/gen" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
