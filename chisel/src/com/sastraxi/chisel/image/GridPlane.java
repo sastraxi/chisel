@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import com.sastraxi.chisel.image.glsl.GridShader;
+import com.sastraxi.chisel.shaders.GridShader;
 
 public class GridPlane implements RenderableProvider {
 

@@ -1,4 +1,4 @@
-package com.sastraxi.chisel.image.glsl;
+package com.sastraxi.chisel.shaders;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -19,8 +19,8 @@ public class GridShader implements Shader {
 
 	@Override
 	public void init() {
-		String vert = Gdx.files.classpath("com/sastraxi/chisel/image/glsl/grid.vert").readString();
-		String frag = Gdx.files.classpath("com/sastraxi/chisel/image/glsl/grid.frag").readString();
+		String vert = Gdx.files.classpath("com/sastraxi/chisel/shaders/grid.vert").readString();
+		String frag = Gdx.files.classpath("com/sastraxi/chisel/shaders/grid.frag").readString();
 		program = new ShaderProgram(vert, frag);
 		if (!program.isCompiled())
 			throw new GdxRuntimeException(program.getLog());
@@ -40,8 +40,7 @@ public class GridShader implements Shader {
 		program.begin();
 		program.setUniformMatrix(u_projTrans, camera.combined);
 		context.setBlending(true, GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		//context.setDepthTest(GL20.GL_LEQUAL);
-		//context.setCullFace(GL20.GL_BACK);
+		context.setDepthTest(GL20.GL_LEQUAL);
 	}
 
 	@Override
