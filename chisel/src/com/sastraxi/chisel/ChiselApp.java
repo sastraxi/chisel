@@ -28,8 +28,6 @@ public class ChiselApp implements ApplicationListener {
 	private PerspectiveCamera camera;
 	private Environment environment;
 
-	private Model box;
-	private ModelInstance boxInstance;
 	private Brush brush;
 	private GridPlane grid;
 
@@ -61,14 +59,6 @@ public class ChiselApp implements ApplicationListener {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
-		// the box, as made by libGDX
-		ModelBuilder modelBuilder = new ModelBuilder();
-		box = modelBuilder.createBox(5f, 5f, 5f,
-			  new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-			  VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-		boxInstance = new ModelInstance(box);
-		boxInstance.transform.setToTranslation(-20.0f, 0f, -20f);
 
 		// the box, as made by us
 		Array<Plane> planes = new Array<Plane>();
@@ -111,7 +101,6 @@ public class ChiselApp implements ApplicationListener {
 	public void dispose() {
 		batch.dispose();
 		stage.dispose();
-		box.dispose();
 	}
 
 	@Override
@@ -122,9 +111,10 @@ public class ChiselApp implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		batch.begin(camera);
-		batch.render(boxInstance, environment);
+
+        batch.render(grid, environment, grid.getShader());
+
 		batch.render(brush, environment);
-		batch.render(grid, environment, grid.getShader());
 		batch.end();
 
 		stage.act(Gdx.graphics.getDeltaTime());

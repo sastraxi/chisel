@@ -29,6 +29,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="$PARENT-1-PROJECT_LOC$" />
+    <orderEntry type="module" module-name="chisel" />
   </component>
 </module>
 

@@ -24,9 +24,7 @@ public class BrushContainer implements RenderableProvider {
 	@Override
 	public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
 		for (Brush brush: brushes) {
-			Renderable renderable = pool.obtain();
-			brush.populate(renderable);
-			renderables.add(renderable);
+			brush.getRenderables(renderables, pool);
 		}
 	}
 }

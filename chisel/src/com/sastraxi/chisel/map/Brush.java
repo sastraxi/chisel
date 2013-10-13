@@ -12,12 +12,32 @@ import com.badlogic.gdx.utils.Pool;
 import com.sastraxi.chisel.image.ColourManager;
 import com.sastraxi.chisel.math.Face;
 import com.sastraxi.chisel.math.LocalMath;
+import com.sastraxi.chisel.state.Selection;
 
 import java.util.Arrays;
 
 public class Brush implements RenderableProvider {
 
-	public static float RESOLUTION = 0.00001f;
+    private Selection selection = null;
+
+    public boolean hasSelection() {
+        return selection != null;
+    }
+
+    /**
+     * Returns the current selection, or null if there isn't one.
+     * Any write operations on the selection must be followed by the appropriate one of:
+     *  - Brush.invalidateMesh(MESH_TYPE_SOLID_SELECTED);
+     *  - Brush.invalidateMesh(MESH_TYPE_POINTS_SELECTED);
+     */
+    public Selection getSelection() {
+        return selection;
+    }
+
+    public void removeSelection(Pool<Selection> selectionPool) {
+        selectionPool.free(this.selection);
+        this.selection = null;
+    }
 
 	// actual data
 	private final Array<Face> faces;
@@ -37,26 +57,60 @@ public class Brush implements RenderableProvider {
 			assert(face.arity() >= 3);
 			assert(face.isConvex(this.vertices));
 		}
+
+        this.meshes = new Mesh[NUM_MESH_TYPES];
+
 	}
 
 	// cache
-	private Mesh _mesh;
-	private boolean validMesh = false;
+    private static final int MESH_TYPE_SOLID = 0;
+    private static final int MESH_TYPE_LINES = 1;
+    private static final int MESH_TYPE_POINTS = 2;
+    private static final int MESH_TYPE_SOLID_SELECTED = 3;
+    private static final int MESH_TYPE_POINTS_SELECTED = 4;
+    private static final int NUM_MESH_TYPES = 5;
 
-	private Mesh getMesh() {
-		if (!validMesh) {
-			if (_mesh != null) _mesh.dispose();
-			_mesh = generateMesh();
-			validMesh = true;
+    private Mesh[] meshes = new Mesh[NUM_MESH_TYPES];
+    private boolean[] meshIsValid = new boolean[NUM_MESH_TYPES];
+
+	private Mesh getMesh(int mesh_type) {
+		if (!meshIsValid[mesh_type]) {
+			if (meshes[mesh_type] != null) {
+                meshes[mesh_type].dispose();
+            }
+			meshes[mesh_type] = generateMesh(mesh_type);
+			meshIsValid[mesh_type] = true;
 		}
-		return _mesh;
+		return meshes[mesh_type];
 	}
+
+    private Mesh generateMesh(int mesh_type) {
+        switch (mesh_type) {
+            case MESH_TYPE_LINES:
+                return generateWireframeMesh();
+            case MESH_TYPE_POINTS:
+                return generatePointMesh(null);
+            case MESH_TYPE_POINTS_SELECTED:
+                return generatePointMesh(selection.getSelectedVertices());
+            case MESH_TYPE_SOLID:
+                return generateSolidMesh(null);
+            case MESH_TYPE_SOLID_SELECTED:
+                return generateSolidMesh(selection.getSelectedFaces());
+        }
+        assert false: "Unhandled mesh type in Brush.generateMesh(int)";
+        return null;
+    }
+
+    private Mesh generatePointMesh(Array<Integer> selectedVertices) {
+        // xxx: stub
+        return null;
+    }
 
 	/**
 	 * Generates a non-smooth mesh (think: D&D dice) that represents this Brush,
 	 * given its geometry.
 	 */
-	private Mesh generateMesh() {
+	private Mesh generateSolidMesh(Array<Integer> selectedFaces) {
 
 		// each face has (edges - 2) triangles.
 		int n_indices = 0, n_vertices = 0;
@@ -68,9 +122,13 @@ public class Brush implements RenderableProvider {
 		int i = 0, v = 0;
 		short[] indices = new short[n_indices]; // each triangle has 3 vertices.
 		float[] verts = new float[n_vertices * 6]; // each vertex has a number of attributes; see below*
-		for (Face face: faces) {
+		for (int f_i = 0; f_i < faces.size; ++f_i) {
 
+            Face face = faces.get(f_i);
 			Vector3 normal = face.getNormal(this.vertices).nor();
+
+            // todo: use selectedFaces to highlight individual faces (might be null, treat as empty set)
+            // this requires us to use a custom shader that blends the brush colour with
 
 			// assemble vertices
 			int v_start = v / 6;
@@ -105,27 +163,51 @@ public class Brush implements RenderableProvider {
 		return mesh;
 	}
 
+    /**
+     * Generate a mesh out of the lines used to draw whatever
+     * @return
+     */
 	private Mesh generateWireframeMesh() {
 		return null;
 	}
 
-	public void populate(Renderable r) {
-		r.mesh = getMesh();
-		r.material = new Material(ColorAttribute.createDiffuse(colour));
-		r.primitiveType = GL10.GL_TRIANGLES;
-		r.meshPartSize = r.mesh.getNumIndices();
-		r.worldTransform.idt();
+	public void invalidateMesh(int mesh_type) {
+		this.meshIsValid[mesh_type] = false;
 	}
 
-	public void invalidateMesh() {
-		this.validMesh = false;
-	}
+    public void invalidateMeshes() {
+        for (int i = 0; i < this.meshIsValid.length; ++i) {
+            this.meshIsValid[i] = false;
+        }
+    }
 
 	@Override
 	public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-		Renderable r = pool.obtain();
-		populate(r);
-		renderables.add(r);
+
+        if (hasSelection()) {
+
+            // solid mesh
+            Renderable r = pool.obtain();
+            r.mesh = getMesh(MESH_TYPE_SOLID_SELECTED);
+            r.material = new Material(ColorAttribute.createDiffuse(colour));
+            r.primitiveType = GL10.GL_TRIANGLES;
+            r.meshPartSize = r.mesh.getNumIndices();
+            r.worldTransform.idt();
+            renderables.add(r);
+
+        } else {
+
+            // solid mesh
+            Renderable r = pool.obtain();
+            r.mesh = getMesh(MESH_TYPE_SOLID);
+            r.material = new Material(ColorAttribute.createDiffuse(colour));
+            r.primitiveType = GL10.GL_TRIANGLES;
+            r.meshPartSize = r.mesh.getNumIndices();
+            r.worldTransform.idt();
+            renderables.add(r);
+
+        }
+
 	}
 
 	/**
